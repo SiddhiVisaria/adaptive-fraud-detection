@@ -157,6 +157,12 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+# Local datasets - never commit raw data
+data/
+
+# Local experiment outputs
+artifacts/
+
 # Cython debug symbols
 cython_debug/
 
