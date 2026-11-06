@@ -171,3 +171,68 @@ experimental results or concept-drift conclusions have been established.
 -   [ ] Inspect class balance across time periods.
 -   [ ] Audit candidate features for leakage.
 -   [ ] Update the dataset decision based on observed evidence.
+
+## Initial Empirical Dataset Inspection
+
+**Dataset:** IEEE-CIS Fraud Detection  
+**Files inspected:** `train_transaction.csv`, `train_identity.csv`
+
+### Dataset dimensions
+
+| Attribute | Result |
+|---|---:|
+| Transaction records | 590,540 |
+| Transaction columns | 394 |
+| Identity records | 144,233 |
+| Identity columns | 41 |
+| Fraud cases | 20,663 |
+| Legitimate cases | 569,877 |
+| Overall fraud rate | 3.499% |
+
+### Temporal coverage
+
+- Earliest `TransactionDT`: 86,400
+- Latest `TransactionDT`: 15,811,131
+- Approximate elapsed coverage: 182 days.
+
+### Fraud prevalence across 14-day periods
+
+The observed fraud rate varied between 2.256% and 4.374%.
+
+- Lowest observed rate: Period 2 (2.256%).
+- Highest observed rate: Period 5 (4.374%).
+
+This indicates variation in fraud prevalence over the observation period. It does not independently establish concept drift.
+
+### Transaction amount analysis
+
+The overall transaction amount distribution showed a non-linear association with fraud.
+
+| Amount band | Fraud rate |
+|---|---:|
+| 0.25–35.95 | 4.376% |
+| 35.95–57.95 | 2.612% |
+| 57.95–100 | 3.309% |
+| 100–159.95 | 2.696% |
+| 159.95–31,937.39 | 4.449% |
+
+Median transaction amounts also varied across the 13 periods. Comparisons between fraudulent and legitimate transaction medians showed differences across periods.
+
+These are exploratory observations, not proof of a changing feature-label relationship.
+
+### Data quality observations
+
+- Transaction data contains 394 columns, including numerical and categorical features.
+- Identity data contains 41 columns and is available for a subset of transactions.
+- Several transaction and identity features have substantial missingness.
+- Missingness, categorical encoding, feature selection and potential leakage require further investigation.
+
+### Initial assessment
+
+IEEE-CIS passes the initial dataset feasibility assessment for a chronological fraud detection experiment.
+
+The dataset offers sufficient transaction volume, labelled fraud examples and temporal coverage to investigate static model performance over time.
+
+**Outstanding research question:** Does the relationship between transaction features and fraud labels change sufficiently over time to affect model performance, and can an adaptation strategy improve future-period performance?
+
+No conclusion about concept drift or adaptive model superiority has been established.
