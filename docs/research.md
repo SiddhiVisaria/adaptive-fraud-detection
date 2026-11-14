@@ -236,3 +236,27 @@ The dataset offers sufficient transaction volume, labelled fraud examples and te
 **Outstanding research question:** Does the relationship between transaction features and fraud labels change sufficiently over time to affect model performance, and can an adaptation strategy improve future-period performance?
 
 No conclusion about concept drift or adaptive model superiority has been established.
+
+### Identity Data Availability and Fraud Association
+
+The IEEE-CIS identity dataset contains 144,233 records, representing 24.42% of the 590,540 transactions. All identity records matched a transaction using `TransactionID`, with no duplicate or unmatched identity IDs.
+
+A left join preserved all 590,540 transaction records.
+
+**Key observations:**
+
+- Identity availability was 23.32% among legitimate transactions and 54.77% among fraudulent transactions.
+- Fraud prevalence was 2.09% for transactions without identity records and 7.85% for transactions with identity records.
+- Identity coverage varied across the 13 consecutive 14-day periods, ranging from 15.29% to 52.35%.
+- Identity coverage also differed across the chronological partitions: 27.47% in training, 19.60% in validation and 20.12% in testing.
+- The association between identity availability and fraud remained visible across individual periods, although its magnitude varied.
+
+**Interpretation and limitations:**
+
+These findings establish an association between identity-record availability and fraud prevalence. They also identify temporal variation in identity-feature availability.
+
+This is evidence of changing feature availability and a potential source of data distribution shift. It does not, by itself, establish concept drift or demonstrate that identity information improves predictive performance.
+
+**Modelling implications:**
+
+The planned experiments will compare transaction-only features against transaction and identity features, including an explicit identity-availability indicator. All configurations will use the same chronological evaluation partitions to support a fair comparison.
