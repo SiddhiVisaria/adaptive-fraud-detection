@@ -272,3 +272,78 @@ The next phase will investigate static-model performance over time.
 The objective is to determine whether fraud detection performance deteriorates across temporal periods and investigate possible explanations, including changes in fraud prevalence, feature distributions, and fraud patterns.
 
 The results of this analysis will inform the hypothesis and design of the adaptive fraud detection strategy.
+
+## Static Model Temporal Performance Analysis
+
+### Objective
+
+Investigate whether the static Logistic Regression model's fraud detection performance remains consistent across chronological validation periods.
+
+The model was trained once using the training dataset and evaluated across six chronological validation windows without retraining.
+
+### Methodology
+
+- Model: Experiment A — Transaction features only
+- Algorithm: Logistic Regression
+- Training data: Chronological training split
+- Evaluation data: Chronological validation split
+- Temporal window size: 7 days
+- Model retraining between windows: None
+- Classification threshold: 0.5
+- Test set: Not used
+
+The final validation window covers approximately 4.90 days because the validation period does not contain a complete seventh day.
+
+### Temporal validation results
+
+| Window | Transactions | Fraud cases | Fraud rate | Precision | Recall | F1 | PR-AUC | ROC-AUC |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 20,747 | 798 | 3.846% | 0.1586 | 0.7118 | 0.2594 | 0.4308 | 0.8604 |
+| 1 | 20,957 | 897 | 4.280% | 0.1897 | 0.7447 | 0.5031 | 0.8781 |
+| 2 | 22,137 | 1,051 | 4.748% | 0.1798 | 0.7212 | 0.5194 | 0.8696 |
+| 3 | 22,351 | 699 | 3.127% | 0.1482 | 0.7182 | 0.5267 | 0.8659 |
+| 4 | 18,743 | 757 | 4.039% | 0.1666 | 0.6460 | 0.4025 | 0.8396 |
+| 5 | 13,173 | 409 | 3.105% | 0.1232 | 0.6357 | 0.2905 | 0.8234 |
+
+### Observations
+
+Performance varies across the chronological validation windows.
+
+Windows 0–3 show fluctuations in precision, recall, PR-AUC, and ROC-AUC. Performance deterioration becomes more apparent in Windows 4 and 5.
+
+Window 5 records the lowest values for precision, recall, PR-AUC, and ROC-AUC:
+
+- Precision: 12.32%
+- Recall: 63.57%
+- PR-AUC: 0.2905
+- ROC-AUC: 0.8234
+
+Compared with Window 1, recall decreases by approximately 10.90 percentage points, PR-AUC decreases by approximately 0.213, and ROC-AUC decreases by approximately 0.055.
+
+### Fraud prevalence
+
+Fraud prevalence varies across validation windows, ranging from approximately 3.10% to 4.75%.
+
+The final window has a fraud rate of approximately 3.10%, which is lower than the fraud rates observed in Windows 1 and 2. However, model performance is substantially worse in Window 5.
+
+This suggests that the observed deterioration cannot be explained solely by an increase in fraud prevalence.
+
+### Preliminary interpretation
+
+The static model exhibits temporal performance variation, with notably weaker performance in the later validation windows.
+
+This is evidence of temporal performance instability. However, the analysis does not yet establish the cause of the deterioration or confirm concept drift.
+
+Further investigation is required to determine whether the observed performance changes are associated with feature distribution changes, changes in fraud patterns, changes in feature-target relationships, or statistical variability.
+
+### Limitations
+
+- The model was evaluated on six temporal windows.
+- The final window is shorter than the preceding windows.
+- No statistical significance testing or confidence intervals were calculated.
+- Performance variation alone does not establish concept drift.
+- The analysis uses validation data only; the test set remains untouched.
+
+### Next investigation
+
+Investigate feature distribution changes across the training dataset and chronological validation windows to identify potential data drift and determine whether these changes coincide with the observed deterioration in model performance.
