@@ -113,3 +113,162 @@ The above confusion matrix was generated during the initial run where we had a b
 |---|---:|---:|
 | Actual legitimate | 113,497 | 0 |
 | Actual fraud | 4,611 | 0 |
+
+## Feature Availability Experiments: A, B and C
+
+### 1. Objective
+
+Investigate whether adding identity-related features and explicitly modelling identity-data availability improves fraud detection performance compared with a transaction-only baseline.
+
+Three feature configurations were evaluated using the same Logistic Regression model and chronological train-validation-test split.
+
+### 2. Dataset and chronological split
+
+Dataset: IEEE-CIS Fraud Detection
+
+The transaction dataset was merged with the identity dataset using `TransactionID` through a validated one-to-one left join.
+
+- Total transactions: 590,540
+- Transactions with identity information: 144,233 (24.42%)
+- Transactions without identity information: 446,307
+- Duplicate TransactionIDs after merge: 0
+
+Chronological split:
+
+| Dataset | Transactions | Fraud cases | Fraud rate |
+|---|---:|---:|---:|
+| Train | 354,324 | 11,988 | 3.3833% |
+| Validation | 118,108 | 4,611 | 3.9041% |
+| Test | 118,108 | 4,064 | 3.4409% |
+| Total | 590,540 | 20,663 | 3.4990% |
+
+The split was performed chronologically using `TransactionDT`.
+
+The test set was not used during these experiments. All results reported below are validation results.
+
+### 3. Model and hyperparameters
+
+Model: Logistic Regression
+
+Configuration:
+
+- `class_weight="balanced"`
+- `solver="lbfgs"`
+- `max_iter=2000`
+- `random_state=42`
+- `tol=1e-4`
+
+The same model configuration was used across all three experiments.
+
+Preprocessing was fitted using training data only. Validation data was transformed using the fitted training preprocessor.
+
+The classification threshold remained at the default value of 0.5. No threshold tuning was performed.
+
+### 4. Feature configurations
+
+| Experiment | Features |
+|---|---|
+| A | Transaction features only |
+| B | Transaction features + identity features |
+| C | Transaction features + identity features + `has_identity` indicator |
+
+The `has_identity` indicator represents whether identity information was available for a transaction.
+
+### 5. Validation results
+
+| Metric | Experiment A | Experiment B | Experiment C |
+|---|---:|---:|---:|
+| Precision | 0.164287 | 0.164997 | 0.165132 |
+| Recall | 0.703752 | 0.703752 | 0.704186 |
+| F1-score | 0.266388 | 0.267320 | 0.267529 |
+| PR-AUC | 0.462218 | 0.455057 | 0.454873 |
+| ROC-AUC | 0.860567 | 0.858997 | 0.858956 |
+| True Positives | 3,245 | 3,245 | 3,247 |
+| False Negatives | 1,366 | 1,366 | 1,364 |
+| False Positives | 16,507 | 16,422 | 16,416 |
+| True Negatives | 96,990 | 97,075 | 97,081 |
+
+### 6. Confusion matrices
+
+#### Experiment A — Transaction features only
+
+```text
+[[96990, 16507],
+ [ 1366,  3245]]
+```
+
+#### Experiment B — Transaction + identity features
+
+```text
+[[97075, 16422],
+ [ 1366,  3245]]
+```
+
+#### Experiment C — Transaction + identity + availability indicator
+
+```text
+[[97081, 16416],
+ [ 1364,  3247]]
+```
+
+Matrix format:
+
+```text
+[[True Negatives, False Positives],
+ [False Negatives, True Positives]]
+```
+
+### 7. Results interpretation
+
+#### Experiment B compared with Experiment A
+
+Adding identity features resulted in:
+
+- A slight increase in precision.
+- No change in recall.
+- A slight increase in F1-score.
+- 85 fewer false positives.
+- A decrease in PR-AUC.
+- A decrease in ROC-AUC.
+
+Identity features did not improve ranking performance according to PR-AUC or ROC-AUC.
+
+#### Experiment C compared with Experiment B
+
+Adding the identity-availability indicator resulted in:
+
+- A slight increase in precision.
+- A small increase in recall, detecting two additional fraud cases.
+- A slight increase in F1-score.
+- Six fewer false positives.
+- A slight decrease in PR-AUC.
+- A slight decrease in ROC-AUC.
+
+The availability indicator produced marginal improvements in threshold-based metrics but did not improve ranking performance.
+
+#### Overall finding
+
+The transaction-only configuration achieved the highest PR-AUC and ROC-AUC among the three feature configurations.
+
+Adding identity features and the identity-availability indicator resulted in small improvements in precision, recall, and F1-score at the default classification threshold, while ranking metrics decreased.
+
+The exploratory analysis previously identified an association between identity-data availability and fraud prevalence. However, this association did not translate into improved ranking performance in these experiments.
+
+These results demonstrate that an observed relationship between a feature and the target does not necessarily result in improved predictive performance when that feature is added to a model.
+
+### 8. Limitations
+
+- Results are based on the validation dataset only. The test dataset remains untouched.
+- No statistical significance testing or confidence intervals were calculated.
+- The classification threshold was fixed at 0.5 and was not optimised.
+- Only Logistic Regression was evaluated in these experiments.
+- The experiments evaluate aggregate validation performance and do not yet investigate performance changes across time periods.
+- These experiments do not establish whether identity features would be useful under different models, thresholds, or adaptation strategies.
+
+### 9. Next research phase
+
+The next phase will investigate static-model performance over time.
+
+The objective is to determine whether fraud detection performance deteriorates across temporal periods and investigate possible explanations, including changes in fraud prevalence, feature distributions, and fraud patterns.
+
+The results of this analysis will inform the hypothesis and design of the adaptive fraud detection strategy.
