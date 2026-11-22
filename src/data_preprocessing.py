@@ -101,6 +101,9 @@ def prepare_features(
         include=["number"]
     ).columns.tolist()
 
+    # Convert numerical features to float32
+    X[numerical_columns] = X[numerical_columns].astype("float32")
+
     # Normalise missing values in categorical columns
     for column in categorical_columns:
         X[column] = X[column].astype(object)
@@ -119,7 +122,8 @@ def prepare_features(
         )),
         ("encoder", OneHotEncoder(
             handle_unknown="ignore",
-            min_frequency=20
+            min_frequency=20,
+            dtype=np.float32
         ))
     ])
 
